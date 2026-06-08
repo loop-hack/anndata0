@@ -8,6 +8,7 @@ from app.twin_builder import build_twin
 from app.influx_service import get_moisture_history
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
+from app.ditto_service import update_ditto
 
 app = FastAPI(
     title="Smart Farm Digital Twin",
