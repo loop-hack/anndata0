@@ -258,7 +258,7 @@ header {
   flex-shrink:0; line-height:1;
 }
 
-/* ── ALERT ROWS: full red background flash ── */
+/*  ALERT ROWS: full red background flash  */
 .diag-item.is-alert {
   font-size:17px;
   font-weight:700;
@@ -976,7 +976,7 @@ function onIntervalChange(key) {
 refreshAll(currentKey);
 setInterval(() => refreshAll(currentKey), 5 * 60 * 1000);
 
-// ── Trend Maximize Modal ──────────────────────────────────────────
+//  Trend Maximize Modal 
 function openTrend(iframeId, title) {
   const srcEl    = document.getElementById(iframeId);
   const panel    = srcEl ? srcEl.getAttribute('data-panel') : null;
@@ -1017,7 +1017,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeTrend();
 });
 
-// ── Sensor + Alerts + Recommendations polling ─────────────────────
+//  Sensor + Alerts + Recommendations polling 
 
 function setVal(id, val) {
   const el = document.getElementById(id);
@@ -1031,7 +1031,7 @@ function setVal(id, val) {
   }
 }
 
-// ── FIX: renderAlerts — driven 100% by JS fetch, no Jinja2 dependency ──
+//  FIX: renderAlerts  driven 100% by JS fetch, no Jinja2 dependency 
 function renderAlerts(alerts) {
   const body  = document.getElementById('alert-body');
   const badge = document.getElementById('alert-badge');
@@ -1051,7 +1051,7 @@ function renderAlerts(alerts) {
   }
 }
 
-// ── FIX: renderRecs — driven 100% by JS fetch, no Jinja2 dependency ──
+//  FIX: renderRecs  driven 100% by JS fetch, no Jinja2 dependency       
 function renderRecs(recs) {
   const body = document.getElementById('rec-body');
   if (!body) return;
@@ -1065,7 +1065,7 @@ function renderRecs(recs) {
   }
 }
 
-// ── Render zones ──────────────────────────────────────────────────
+//  Render zones 
 function renderZones(zones) {
   const grid = document.getElementById('zones-grid');
   if (!grid || !zones || zones.length === 0) return;
@@ -1078,7 +1078,7 @@ function renderZones(zones) {
   `).join('');
 }
 
-// ── Main polling function ─────────────────────────────────────────
+//  Main polling function 
 async function updateTwin() {
   try {
     const res  = await fetch('/farm/twin');
@@ -1101,13 +1101,13 @@ async function updateTwin() {
     setVal('phosphorus-value',  twin.sensors?.phosphorus);
     setVal('potassium-value',   twin.sensors?.potassium);
 
-    // ── ALERTS: pulled directly from twin.alerts array ──
+    //  ALERTS: pulled directly from twin.alerts array 
     renderAlerts(twin.alerts);
 
-    // ── RECOMMENDATIONS: pulled directly from twin.recommendations array ──
+    //  RECOMMENDATIONS: pulled directly from twin.recommendations array 
     renderRecs(twin.recommendations);
 
-    // ── Zones ──
+    //  Zones 
     if (twin.zones) renderZones(twin.zones);
 
   } catch(e) {
