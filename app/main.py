@@ -1,29 +1,39 @@
-from fastapi import FastAPI
-from app.influx_service import get_latest_data
-from app.alert_engine import generate_alerts
-from app.health_engine import calculate_health
-from app.recommendation_engine import generate_recommendations
-from app.farm_model import FARM
-from app.twin_builder import build_twin
-from app.influx_service import get_moisture_history
-from fastapi import Request
-from fastapi.templating import Jinja2Templates
-from app.ditto_service import update_ditto
+from fastapi import FastAPI, Body
+from pydantic import BaseModel
+from fastapi.responses import FileResponse
+
+from app.ditto_reader import (
+    get_twin,
+    get_actual,
+    get_virtual,
+    get_attributes
+)
+
+from app.ditto_writer import (
+    update_virtual_property,
+    update_actual_property
+)
 
 app = FastAPI(
     title="Smart Farm Digital Twin",
-    version="1.0.0"
+    version="2.0.0"
 )
 
-templates = Jinja2Templates(
-    directory="templates"
-)
 
+#models
+
+class PropertyUpdate(BaseModel):
+    property: str
+    value: object
+
+
+#basic endpoints
 
 @app.get("/")
 def root():
     return {
         "project": "Smart Farm Digital Twin",
+        "architecture": "Ditto First",
         "status": "running"
     }
 
@@ -31,62 +41,65 @@ def root():
 @app.get("/health")
 def health():
     return {
-        "backend": "healthy"
+        "backend": "healthy",
+        "source": "Eclipse Ditto"
     }
 
 
-@app.get("/farm/live")
-def farm_live():
-    return get_latest_data()
-
+#reading endpoints
 
 @app.get("/farm/twin")
 def farm_twin():
+    return get_twin()
 
-    sensor_data = get_latest_data()
 
-    alerts = generate_alerts(sensor_data)
-
-    health_score = calculate_health(sensor_data)
-
-    recommendations = generate_recommendations(sensor_data)
-
-    return build_twin(
-    sensor_data,
-    health_score,
-    alerts,
-    recommendations
-)
-
-@app.get("/farm/history/moisture")
-def moisture_history():
-
+@app.get("/farm/digital-twin")
+def digital_twin():
     return {
-        "values": get_moisture_history()
+        "attributes": get_attributes(),
+        "actual": get_actual(),
+        "virtual": get_virtual()
     }
 
-@app.get("/dashboard")
-def dashboard(request: Request):
 
-    sensor_data = get_latest_data()
+@app.get("/farm/attributes")
+def attributes():
+    return get_attributes()
 
-    alerts = generate_alerts(sensor_data)
 
-    health_score = calculate_health(sensor_data)
+@app.get("/farm/actual")
+def actual():
+    return get_actual()
 
-    recommendations = generate_recommendations(sensor_data)
 
-    twin = build_twin(
-        sensor_data,
-        health_score,
-        alerts,
-        recommendations
+@app.get("/farm/virtual")
+def virtual():
+    return get_virtual()
+
+
+#writer endpoints
+
+@app.post("/farm/virtual")
+def update_virtual(payload: PropertyUpdate):
+
+    return update_virtual_property(
+        payload.property,
+        payload.value
     )
 
-    return templates.TemplateResponse(
-        request=request,
-        name="dashboard.html",
-        context={
-            "twin": twin
-        }
+
+@app.post("/farm/actual")
+def update_actual(payload: PropertyUpdate):
+
+    return update_actual_property(
+        payload.property,
+        payload.value
+    )
+
+
+
+@app.get("/dashboard")
+def dashboard():
+    return FileResponse(
+        "templates/dashboard.html"
     )
