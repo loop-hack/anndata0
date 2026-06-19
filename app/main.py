@@ -215,8 +215,7 @@ def actual_history():
     return get_actual_history(LEGACY_THING_ID)
 
 
-# ---- farm-scoped ----
-
+# using farm_id path param to scope to a specific farm's twin, for all endpoints except creation and listing
 @app.get("/farm/{farm_id}/twin")
 def farm_twin_scoped(farm_id: str):
     return get_twin(thing_id_for_farm(farm_id))
