@@ -1,231 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>Shri Timli Digital Twin</title>
-
-    <style>
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-        }
-
-        h1 {
-            color: green;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 30px;
-        }
-
-        th, td {
-            border: 1px solid #cccccc;
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #eeeeee;
-        }
-
-        input {
-            width: 120px;
-            padding: 5px;
-        }
-
-        button {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .actual {
-            background-color: #f8fff8;
-        }
-
-        .virtual {
-            background-color: #fffdf5;
-        }
-
-    </style>
-</head>
-
-<body>
-
-    <h1>Shri Timli Farm Digital Twin</h1>
-
-    <h2>Actual Sensor Data (Live)</h2>
-
-    <table id="actualTable" class="actual">
-    </table>
-
-    <h2>Virtual Data </h2>
-
-    <table id="virtualTable" class="virtual">
-    </table>
-
-<script>
-
-async function loadActual() {
-
-    try {
-
-        const response =
-            await fetch("/farm/actual");
-
-        const data =
-            await response.json();
-
-        let html =
-            "<tr><th>Property</th><th>Value</th></tr>";
-
-        for (const key in data) {
-
-            html += `
-            <tr>
-                <td>${key}</td>
-                <td>${data[key]}</td>
-            </tr>
-            `;
-        }
-
-        document.getElementById(
-            "actualTable"
-        ).innerHTML = html;
-
-    } catch(error) {
-
-        console.error(error);
-    }
-}
-
-
-
-async function loadVirtual() {
-
-    try {
-
-        const response =
-            await fetch("/farm/virtual");
-
-        const data =
-            await response.json();
-
-        let html =
-            "<tr><th>Property</th><th>Current Value</th><th>New Value</th><th>Action</th></tr>";
-
-        for (const key in data) {
-
-            html += `
-            <tr>
-
-                <td>${key}</td>
-
-                <td>${data[key]}</td>
-
-                <td>
-
-                    <input
-                        id="input_${key}"
-                        value="${data[key]}"
-                    >
-
-                </td>
-
-                <td>
-
-                    <button
-                        onclick="saveVirtual('${key}')">
-
-                        Save
-
-                    </button>
-
-                </td>
-
-            </tr>
-            `;
-        }
-
-        document.getElementById(
-            "virtualTable"
-        ).innerHTML = html;
-
-    } catch(error) {
-
-        console.error(error);
-    }
-}
-
-
-
-async function saveVirtual(property) {
-
-    const value =
-        document.getElementById(
-            "input_" + property
-        ).value;
-
-    try {
-
-        const response =
-            await fetch(
-                "/farm/virtual",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                        "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        property: property,
-
-                        value: isNaN(value)
-                            ? value
-                            : Number(value)
-
-                    })
-                }
-            );
-
-        const result =
-            await response.json();
-
-        console.log(result);
-
-        loadVirtual();
-
-    } catch(error) {
-
-        console.error(error);
-    }
-}
-
-
-
-loadActual();
-
-loadVirtual();
-
-
-
-setInterval(
-    loadActual,
-    3000
-);
-
-</script>
-
-</body>
-</html> -->
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,6 +64,8 @@ setInterval(
   button.ghost{background:transparent;border-color:transparent;color:var(--ink-soft);}
   button.ghost:hover{color:var(--ink);background:var(--surface-2);}
   button.danger-btn{color:var(--danger);}
+  button.danger{background:var(--danger);color:#fff;border-color:var(--danger);}
+  button.danger:hover{opacity:.85;}
   button:disabled{opacity:.45;cursor:not-allowed;}
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible{
     outline:2px solid var(--amber);outline-offset:2px;
@@ -358,6 +132,45 @@ setInterval(
   .ack-btn:hover{background:var(--surface-2);}
   .save-name-btn{font-size:11px;padding:3px 8px;border-radius:5px;border:none;background:var(--ink);color:#fff;cursor:pointer;}
   .save-name-btn:hover{opacity:.85;}
+
+  button.small{font-size:11px;padding:3px 9px;border-radius:5px;}
+  .mapping-chip-list{display:flex;flex-wrap:wrap;gap:6px;max-width:280px;}
+  .mapping-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--actual-soft);color:var(--actual);
+    border-radius:6px;padding:3px 6px 3px 9px;font-size:11.5px;font-weight:500;
+  }
+  .mapping-chip-remove{
+    border:none;background:transparent;color:var(--actual);opacity:.6;cursor:pointer;
+    font-size:11px;padding:0 2px;line-height:1;
+  }
+  .mapping-chip-remove:hover{opacity:1;}
+  .sensor-detail-row td{padding:0;border-bottom:1px solid var(--line);}
+  .sensor-detail-panel{
+    background:var(--surface-2);padding:16px 20px;display:flex;flex-direction:column;gap:18px;
+  }
+  .sensor-detail-block{display:flex;flex-direction:column;gap:8px;}
+  .sensor-detail-label{font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-soft);}
+  .add-mapping-row{display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+  .add-mapping-row select{border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-size:12.5px;background:var(--surface);color:var(--ink);font-family:'Inter',sans-serif;min-width:200px;}
+  .channel-pick-group{display:flex;flex-direction:column;gap:4px;}
+  .channel-pick-list{display:flex;flex-wrap:wrap;gap:10px;}
+  .channel-pick{font-size:12px;display:flex;align-items:center;gap:4px;color:var(--ink-soft);}
+  .channel-range-table{display:flex;flex-direction:column;gap:4px;}
+  .channel-range-row{
+    display:grid;grid-template-columns:120px 90px 90px 50px 70px;gap:10px;align-items:center;
+    padding:5px 0;border-bottom:1px solid var(--line);
+  }
+  .channel-range-row.head{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);border-bottom:1px solid var(--line);}
+  .channel-range-row:last-child{border-bottom:none;}
+  .channel-range-row input[type="number"]{
+    width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 7px;font-size:12.5px;
+    background:var(--surface);color:var(--ink);font-family:'IBM Plex Mono',monospace;
+  }
+  .channel-range-row input[type="number"]:focus{outline:none;border-color:var(--ink);}
+  .source-toggle.small{width:30px;height:17px;}
+  .source-toggle.small .knob{width:13px;height:13px;}
+  .source-toggle.small.on .knob{left:15px;}
 
   .side-nav{display:flex;flex-direction:column;padding:10px;gap:2px;border-bottom:1px solid var(--line);}
   .side-nav-btn{
@@ -480,25 +293,25 @@ setInterval(
   .img-meta{font-size:11.5px;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px;}
   .img-meta b{color:var(--ink);font-weight:600;}
 
-  .sensor-row{padding:11px 0;border-bottom:1px solid var(--surface-2);}
+  .sensor-row{padding:16px 0;border-bottom:1px solid var(--surface-2);}
   .sensor-row:last-child{border-bottom:none;}
-  .sensor-row-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
-  .sensor-name{font-weight:600;font-size:13.5px;}
-  .sensor-meta{font-size:11px;color:var(--ink-soft);margin-top:1px;}
-  .sensor-value{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;white-space:nowrap;}
-  .sensor-value .unit{font-size:11px;color:var(--ink-soft);font-weight:500;margin-left:3px;}
+  .sensor-row-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:10px;}
+  .sensor-name{font-weight:700;font-size:16px;}
+  .sensor-meta{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+  .sensor-value{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:26px;white-space:nowrap;line-height:1;}
+  .sensor-value .unit{font-size:13px;color:var(--ink-soft);font-weight:600;margin-left:4px;}
   .override-flag{
     display:inline-block;margin-left:7px;font-size:10px;font-weight:700;text-transform:uppercase;
     background:var(--amber-soft);color:#7a4d10;padding:1px 7px;border-radius:20px;letter-spacing:.03em;
   }
   .stale-tag{color:var(--danger);}
 
-  .rangebar-track{height:6px;background:var(--surface-2);border-radius:4px;position:relative;}
-  .rangebar-fill{position:absolute;left:0;top:0;height:100%;border-radius:4px;background:var(--virtual);}
+  .rangebar-track{height:10px;background:var(--surface-2);border-radius:6px;position:relative;}
+  .rangebar-fill{position:absolute;left:0;top:0;height:100%;border-radius:6px;background:var(--virtual);}
   .rangebar.actual .rangebar-fill{background:var(--actual);}
   .rangebar.overridden .rangebar-fill{background:var(--amber);}
-  .rangebar-marker{position:absolute;top:-3px;width:2px;height:12px;background:var(--ink);border-radius:2px;}
-  .rangebar-labels{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-soft);margin-top:4px;}
+  .rangebar-marker{position:absolute;top:-4px;width:4px;height:18px;background:var(--ink);border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+  .rangebar-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:6px;font-weight:500;}
 
   .empty-state{
     padding:36px 20px;text-align:center;color:var(--ink-soft);font-size:13.5px;
@@ -524,6 +337,31 @@ setInterval(
   .mode-badge.actual{background:var(--actual-soft);color:var(--actual);}
   .mode-badge.virtual{background:var(--virtual-soft);color:var(--virtual);}
   .sensor-table-name{display:flex;align-items:center;gap:7px;}
+
+  /* ===== sensor row source toggle ===== */
+  .sensor-row-controls{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .source-toggle{
+    position:relative;width:40px;height:22px;border-radius:12px;cursor:pointer;border:none;
+    background:var(--virtual);transition:background .15s;flex-shrink:0;
+  }
+  .source-toggle.on{background:var(--actual);}
+  .source-toggle .knob{
+    position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .15s;
+  }
+  .source-toggle.on .knob{left:20px;}
+  .source-toggle-label{font-size:10.5px;font-weight:600;color:var(--ink-soft);text-align:center;margin-top:3px;}
+  .minmax-editor{
+    display:flex;gap:8px;align-items:center;margin-top:8px;padding:8px 10px;background:var(--surface-2);
+    border-radius:8px;font-size:12px;
+  }
+  .minmax-editor label{color:var(--ink-soft);font-weight:600;}
+  .minmax-editor input{
+    width:64px;border:1px solid var(--line);border-radius:6px;padding:3px 7px;font-size:12px;
+    background:var(--surface);color:var(--ink);font-family:'IBM Plex Mono',monospace;
+  }
+  .minmax-editor input:focus{outline:none;border-color:var(--ink);}
+  .off-tag{color:var(--virtual);font-weight:600;font-size:11px;}
 
   /* ===== SENSOR LIBRARY (settings) ===== */
   .lib-panel{margin-bottom:22px;}
@@ -606,15 +444,6 @@ setInterval(
   .create-body{flex:1;overflow-y:auto;padding:20px 24px;}
   .create-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;}
   .create-step-label{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:14px;}
-
-  .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
-  .preset-card{
-    border:1.5px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;background:var(--surface);
-  }
-  .preset-card:hover{border-color:var(--ink-soft);}
-  .preset-card.selected{border-color:var(--ink);background:var(--surface-2);}
-  .preset-card .pname{font-weight:600;font-size:13.5px;margin-bottom:3px;}
-  .preset-card .pmeta{font-size:11.5px;color:var(--ink-soft);}
 
   ::selection{background:var(--virtual-soft);}
 </style>
@@ -787,7 +616,13 @@ function defaultScenarioOverrides(sensors){
 }
 
 function createFarm(name, legacy=false, opts={}){
-  const sensors = opts.sensors ? JSON.parse(JSON.stringify(opts.sensors)) : defaultSensors();
+  // No sensors provided -> a genuinely blank farm, not the old 33-sensor
+  // demo default. defaultSensors() must now be requested EXPLICITLY by a
+  // caller that actually wants it (nothing currently should) — falling
+  // back to it silently is exactly what caused every farm to reappear
+  // pre-stocked with the full demo library on every refresh, regardless
+  // of what was actually mapped to it via the Sensors tab.
+  const sensors = opts.sensors ? JSON.parse(JSON.stringify(opts.sensors)) : [];
   const meta = opts.meta ? {...opts.meta} : defaultMeta();
   const defaults = defaultScenarioOverrides(sensors);
   const scenarios = {};
@@ -859,6 +694,29 @@ function addSensorFromLibrary(key){
 
 function actualUrl(farm){ return farm.legacy ? '/farm/actual' : `/farm/${farm.id}/actual`; }
 function virtualUrl(farm){ return farm.legacy ? '/farm/virtual' : `/farm/${farm.id}/virtual`; }
+function scenariosUrl(farm){ return farm.legacy ? '/farm/scenarios' : `/farm/${farm.id}/scenarios`; }
+
+async function persistScenarios(farm){
+  try{
+    await fetch(scenariosUrl(farm), {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(farm.scenarios)
+    });
+  }catch(e){ console.error('persistScenarios:', e); }
+}
+
+async function loadScenarios(farm){
+  try{
+    const res = await fetch(scenariosUrl(farm));
+    if(!res.ok) return;
+    const saved = await res.json();
+    if(!saved || typeof saved !== 'object') return;
+    Object.keys(saved).forEach(name=>{
+      farm.scenarios[name] = saved[name];
+    });
+  }catch(e){ /* no saved scenarios yet — keep local defaults */ }
+}
 
 async function tickActual(farm){
   try{
@@ -866,7 +724,7 @@ async function tickActual(farm){
     if(!res.ok) throw new Error('status '+res.status);
     const data = await res.json();
     farm.sensors.forEach(s=>{
-      if(s.mode==='actual' && data[s.key]!==undefined && data[s.key]!==null){
+      if(s.mode==='actual' && s.enabledReal!==false && data[s.key]!==undefined && data[s.key]!==null){
         s.value = data[s.key];
       }
     });
@@ -876,7 +734,51 @@ async function tickActual(farm){
     // backend route missing or offline — keep last known actual values (passthrough)
     farm.actualStale = true;
   }
-  if(farm.id===state.activeFarmId && state.activeTab==='dashboard') renderContent();
+  // Targeted update only — never a full re-render here. A full renderContent()
+  // would rebuild every input on screen every 3 seconds, wiping out anything
+  // the user is mid-typing (rename, min/max, mapping checkboxes, etc). Updating
+  // just the value text/range-bar for sensors that already have stable DOM ids
+  // gets the "live" feel without ever touching anything else on the page.
+  if(farm.id===state.activeFarmId && state.activeTab==='dashboard') updateLiveValueDisplays(farm);
+}
+
+// Detects whether the user currently has keyboard focus inside an editable
+// field anywhere in the main content area. Used to skip auto-triggered
+// (polling-driven) re-renders so they never revert an in-progress, unsaved
+// edit — the user's own actions (clicking Save, switching tabs, etc.) still
+// render normally and are never blocked by this.
+function isEditingFocusedInContent(){
+  const el = document.activeElement;
+  if(!el) return false;
+  const content = document.getElementById('content');
+  if(!content || !content.contains(el)) return false;
+  return el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA';
+}
+
+// Updates only the numbers on screen for one farm's sensor rows — the value
+// display and the range-bar fill/marker/labels — without touching any other
+// DOM node. This is what tickActual/tickVirtual call every few seconds
+// instead of a full renderContent(), so typing into any input anywhere on
+// the page is never interrupted by the live polling.
+function updateLiveValueDisplays(farm){
+  farm.sensors.forEach(s=>{
+    const override = activeOverrideFor(farm, s.key);
+    const valEl = document.getElementById(`sensorval_${farm.id}_${s.key}`);
+    if(valEl){
+      const numEl = valEl.querySelector('.value-num');
+      if(numEl) numEl.textContent = fmt(s.value, s.decimals);
+    }
+
+    const min = override ? override.min : s.min;
+    const max = override ? override.max : s.max;
+    const pct = clamp(((s.value - min) / ((max - min) || 1)) * 100, 0, 100);
+
+    const fillEl = document.getElementById(`rangebarfill_${farm.id}_${s.key}`);
+    if(fillEl) fillEl.style.width = pct + '%';
+
+    const markerEl = document.getElementById(`rangebarmarker_${farm.id}_${s.key}`);
+    if(markerEl) markerEl.style.left = pct + '%';
+  });
 }
 
 function activeOverrideFor(farm, sensorKey){
@@ -896,15 +798,15 @@ function tickVirtual(farm){
     const override = activeOverrideFor(farm, s.key);
     if(override){
       s.value = randIn(override.min, override.max, s.decimals);
-    } else if(s.mode==='virtual'){
+    } else if(s.mode==='virtual' || (s.mode==='actual' && s.enabledReal===false)){
       s.value = randIn(s.min, s.max, s.decimals);
     }
-    // actual-mode sensors with no active override keep whatever tickActual gave them
+    // live actual-mode sensors with no active override keep whatever tickActual gave them
   });
   publishVirtual(farm);
   farm.history.push({ts:Date.now(), scenario:farm.activeScenario, snapshot:snapshotFarm(farm)});
   if(farm.history.length>200) farm.history.shift();
-  if(farm.id===state.activeFarmId && state.activeTab==='dashboard') renderContent();
+  if(farm.id===state.activeFarmId && state.activeTab==='dashboard') updateLiveValueDisplays(farm);
 }
 
 async function publishVirtual(farm){
@@ -934,7 +836,12 @@ function stopFarmTimers(farm){
 
 /* ---------------- farm management ---------------- */
 
-function selectFarm(id){ state.activeFarmId = id; state.openScenario=null; renderAll(); }
+function selectFarm(id){
+  state.activeFarmId = id;
+  state.openScenario=null;
+  try{ localStorage.setItem('smartfarm_active_farm', id); }catch(e){ /* storage unavailable — selection just won't survive a refresh */ }
+  renderAll();
+}
 function setTab(tab){ state.activeTab = tab; state.openScenario=null; if(tab==='sensors') loadSensors(); renderAll(); }
 
 function duplicateFarm(id){
@@ -951,27 +858,35 @@ function duplicateFarm(id){
 async function removeFarm(id){
   const farm = state.farms.find(f=>f.id===id);
   if(!farm) return;
-  if(!confirm(`Permanently delete "${farm.name}"? This removes it from Ditto and cannot be undone.`)) return;
+  if(!confirm(`Delete "${farm.name}"? This permanently removes it from Ditto — sensor mappings to it will be cleared too. This cannot be undone.`)) return;
 
-  stopFarmTimers(farm);
-
-  if(!farm.legacy && !farm.isPlaceholder){
-    try{
-      const res = await fetch(`/farms/${farm.id}`, { method: 'DELETE' });
-      if(!res.ok){
-        const body = await res.json().catch(()=>({}));
-        alert('Could not delete farm on the server: ' + (body.detail || res.status));
-        return; // don't remove locally if the server-side delete failed
-      }
-    }catch(e){
-      alert('Could not reach the backend to delete this farm. It has not been removed.');
+  // Call the backend FIRST. Only touch local state once Ditto actually
+  // confirms the farm is gone — this is the actual fix for "delete
+  // doesn't work / comes back after refresh": the old version only
+  // ever removed the farm from local state and never told the backend,
+  // so the Ditto thing was still there for the very next page load to
+  // fetch right back.
+  try{
+    const res = await fetch(`/farms/${id}`, { method: 'DELETE' });
+    if(!res.ok){
+      const detail = await res.text();
+      alert(`Could not delete this farm from the server. It has NOT been removed.\n\n${detail}`);
       return;
     }
+  }catch(e){
+    alert('Could not reach the backend to delete this farm. It has NOT been removed — check your connection and try again.');
+    console.error('removeFarm:', e);
+    return;
   }
 
+  stopFarmTimers(farm);
   state.farms = state.farms.filter(f=>f.id!==id);
   if(state.activeFarmId===id){
     state.activeFarmId = state.farms[0] ? state.farms[0].id : null;
+    try{
+      if(state.activeFarmId) localStorage.setItem('smartfarm_active_farm', state.activeFarmId);
+      else localStorage.removeItem('smartfarm_active_farm');
+    }catch(e){ /* storage unavailable */ }
   }
   renderAll();
 }
@@ -1033,7 +948,15 @@ function removeSensor(key){
   renderContent();
 }
 
-function updateSensorRange(key, field, value){
+/* Renamed from updateSensorRange to updateLocalSensorRange — there were
+   TWO functions named updateSensorRange in this file (this one, 3-arg,
+   for the local demo simulator; another, 4-arg, for the farm-scoped
+   Settings table below). JS keeps only the last declaration with a
+   given name, so every call to the 3-arg version was silently calling
+   the 4-arg one instead with its extra argument as undefined — which is
+   exactly why the Settings-tab min/max inputs did nothing. Renaming
+   this one removes the collision entirely. */
+function updateLocalSensorRange(key, field, value){
   const farm = activeFarm(); if(!farm) return;
   const sensor = farm.sensors.find(s=>s.key===key); if(!sensor) return;
   const v = parseFloat(value);
@@ -1079,6 +1002,7 @@ function toggleOverrideActive(scenario, key, checked){
 function saveScenario(scenario){
   const farm = activeFarm(); if(!farm) return;
   farm.scenarios[scenario].saved = true;
+  persistScenarios(farm);
   renderContent();
   flashSaved();
 }
@@ -1139,16 +1063,11 @@ function removeScenario(name){
   if(farm.activeScenario===name) farm.activeScenario=null;
   delete farm.scenarios[name];
   if(state.openScenario===name) state.openScenario=null;
+  persistScenarios(farm);
   renderAll();
 }
 
 /* ---------------- create-farm overlay ---------------- */
-
-const PRESETS = [
-  {id:'tomato', name:'Tomato (Soil + Climate)', desc:'Full sensor set — soil probes + weather/plant layer', sensors:null, icon:'🍅'},
-  {id:'minimal', name:'Minimal Soil-Only', desc:'Just the 7 actual soil sensors, no virtual layer', sensors:'soil-only', icon:'📟'},
-  {id:'blank', name:'Blank Layout', desc:'Start with zero sensors, add your own', sensors:'blank', icon:'⬜'},
-];
 
 function openCreateFarm(){
   state.overlay = 'create';
@@ -1156,7 +1075,6 @@ function openCreateFarm(){
     name: 'Farm '+(state.farms.length+1),
     field: 'Field '+String.fromCharCode(65+state.farms.length),
     crop: 'Tomato',
-    presetId: 'tomato',
   };
   renderOverlay();
 }
@@ -1164,11 +1082,6 @@ function openCreateFarm(){
 function closeOverlay(){
   state.overlay = null;
   state.createDraft = null;
-  renderOverlay();
-}
-
-function setCreatePreset(id){
-  state.createDraft.presetId = id;
   renderOverlay();
 }
 
@@ -1185,12 +1098,20 @@ async function confirmCreateFarm(){
   const field = (fieldInput ? fieldInput.value : d.field).trim() || d.field;
   const crop = (cropInput ? cropInput.value : d.crop).trim() || d.crop;
 
-  let sensors = null;
-  if(d.presetId==='soil-only'){
-    sensors = defaultSensors().filter(s=>s.mode==='actual');
-  } else if(d.presetId==='blank'){
-    sensors = [];
-  } // 'tomato' -> null -> full defaults
+  // Every new farm starts with zero sensors. Sensors only ever appear on
+  // a farm once they're explicitly mapped from the Sensors tab — this is
+  // the deliberate, agreed behaviour, not a placeholder.
+  const sensors = [];
+
+  // The backend call is now REQUIRED, not best-effort. A farm that
+  // exists only in this browser tab (no real Ditto thing behind it) is
+  // exactly the bug that was reported: it shows up immediately, then
+  // vanishes on refresh because /farms (the real source of truth) never
+  // had it. So: no successful POST -> no farm shown, full stop. The
+  // create button stays disabled and an error is shown instead of
+  // silently faking success.
+  const confirmBtn = document.getElementById('createFarmConfirmBtn');
+  if(confirmBtn){ confirmBtn.disabled = true; confirmBtn.textContent = 'Creating…'; }
 
   let farmId = null;
   try{
@@ -1199,15 +1120,25 @@ async function confirmCreateFarm(){
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({name, field, crop})
     });
-    if(res.ok){
-      const data = await res.json();
-      farmId = data.farm_id;
+    if(!res.ok){
+      const detail = await res.text();
+      alert(`Could not create this farm on the server — it was NOT created.\n\n${detail || ('HTTP ' + res.status)}`);
+      if(confirmBtn){ confirmBtn.disabled = false; confirmBtn.textContent = 'Create Farm'; }
+      return;
     }
-  }catch(e){ /* backend unreachable — falls back to a local-only demo farm */ }
+    const data = await res.json();
+    farmId = data.farm_id;
+  }catch(e){
+    console.error('confirmCreateFarm:', e);
+    alert('Could not reach the backend to create this farm. It was NOT created — check your connection/server and try again.');
+    if(confirmBtn){ confirmBtn.disabled = false; confirmBtn.textContent = 'Create Farm'; }
+    return;
+  }
 
-  const farm = createFarm(name, false, {id: farmId || undefined, sensors, meta:{field, crop, plantingDate:new Date().toISOString().slice(0,10), daysSincePlanting:0, growthStage:'Seedling'}});
+  const farm = createFarm(name, false, {id: farmId, sensors, meta:{field, crop, plantingDate:new Date().toISOString().slice(0,10), daysSincePlanting:0, growthStage:'Seedling'}});
   state.farms.push(farm);
   state.activeFarmId = farm.id;
+  try{ localStorage.setItem('smartfarm_active_farm', farm.id); }catch(e){ /* storage unavailable */ }
   state.activeTab = 'dashboard';
   startFarmTimers(farm);
   closeOverlay();
@@ -1236,20 +1167,11 @@ function renderOverlay(){
             <div><label>Crop</label><input type="text" id="cfCrop" value="${d.crop}"></div>
           </div>
 
-          <div class="create-step-label">Starting sensor set</div>
-          <div class="preset-grid">
-            ${PRESETS.map(p=>`
-              <div class="preset-card ${d.presetId===p.id?'selected':''}" onclick="setCreatePreset('${p.id}')">
-                <div class="pname">${p.icon} ${p.name}</div>
-                <div class="pmeta">${p.desc}</div>
-              </div>
-            `).join('')}
-          </div>
-          <div class="helper-text">You can add, remove, or change any sensor's range after creating the farm — from Settings. You'll also be able to configure Flood, Drought, Heat Stroke, Excessive Cold, or add your own custom scenarios for this farm.</div>
+          <div class="helper-text">This farm starts with zero sensors. Go to the Sensors tab afterward to map real or virtual sensors onto it — you can also set per-channel min/max ranges and Flood/Drought/Heat/Cold scenarios from there.</div>
         </div>
         <div class="create-foot">
           <button class="ghost" onclick="closeOverlay()">Cancel</button>
-          <button class="primary" onclick="confirmCreateFarm()">Create Farm</button>
+          <button class="primary" id="createFarmConfirmBtn" onclick="confirmCreateFarm()">Create Farm</button>
         </div>
       </div>
     </div>
@@ -1290,7 +1212,7 @@ function renderSidebar(){
   }).join('') || '<div class="empty-state" style="margin:8px 4px;">No farms yet. Click "+ Create Farm" below.</div>';
 }
 
-function rangeBar(sensor, override){
+function rangeBar(sensor, override, farmId){
   const min = override ? override.min : sensor.min;
   const max = override ? override.max : sensor.max;
   const pct = clamp(((sensor.value-min)/((max-min)||1))*100, 0, 100);
@@ -1298,8 +1220,8 @@ function rangeBar(sensor, override){
   return `
     <div class="rangebar ${cls}">
       <div class="rangebar-track">
-        <div class="rangebar-fill" style="width:${pct}%"></div>
-        <div class="rangebar-marker" style="left:${pct}%"></div>
+        <div class="rangebar-fill" id="rangebarfill_${farmId}_${sensor.key}" style="width:${pct}%"></div>
+        <div class="rangebar-marker" id="rangebarmarker_${farmId}_${sensor.key}" style="left:${pct}%"></div>
       </div>
       <div class="rangebar-labels"><span>${fmt(min,sensor.decimals)}</span><span>${fmt(max,sensor.decimals)} ${sensor.unit}</span></div>
     </div>
@@ -1308,19 +1230,127 @@ function rangeBar(sensor, override){
 
 function sensorRow(sensor, farm){
   const override = activeOverrideFor(farm, sensor.key);
-  const stale = sensor.mode==='actual' && farm.actualStale && !override;
+  const realOff = sensor.mode==='actual' && sensor.enabledReal===false;
+  const stale = sensor.mode==='actual' && !realOff && farm.actualStale && !override;
+  const isOn = sensor.mode==='actual' ? sensor.enabledReal!==false : false;
+  const showEditor = (sensor.mode==='virtual' || realOff) && !override;
   return `
     <div class="sensor-row">
       <div class="sensor-row-top">
         <div>
-          <div class="sensor-name">${sensor.name}${override ? `<span class="override-flag">${farm.activeScenario}</span>`:''}</div>
-          <div class="sensor-meta">updated ${timeAgo(Date.now())}${stale?'<span class="stale-tag"> · using last known value</span>':''}</div>
+          <div class="sensor-name">
+            ${sensor.name}
+            <span class="mode-badge ${sensor.mode}">${sensor.mode==='actual' ? 'Real' : 'Virtual'}</span>
+            ${override ? `<span class="override-flag">${farm.activeScenario}</span>`:''}
+          </div>
+          <div class="sensor-meta">
+            ${isOn ? `updated ${timeAgo(Date.now())}${stale?'<span class="stale-tag"> · using last known value</span>':''}`
+              : realOff ? '<span class="off-tag">Real sensor — manually disabled, showing simulated value</span>'
+              : '<span class="off-tag">Simulated — sensor turned off</span>'}
+          </div>
         </div>
-        <div class="sensor-value">${fmt(sensor.value, sensor.decimals)}<span class="unit">${sensor.unit}</span></div>
+        <div class="sensor-row-controls">
+          <div class="sensor-value" id="sensorval_${farm.id}_${sensor.key}"><span class="value-num">${fmt(sensor.value, sensor.decimals)}</span><span class="unit">${sensor.unit}</span></div>
+          <div>
+            <button class="source-toggle ${isOn?'on':''}" title="${isOn?'Turn off real sensor':'Turn on real sensor'}" onclick="toggleSensorSource('${farm.id}','${sensor.key}')">
+              <div class="knob"></div>
+            </button>
+            <div class="source-toggle-label">${isOn?'ON':'OFF'}</div>
+          </div>
+        </div>
       </div>
-      ${rangeBar(sensor, override)}
+      ${rangeBar(sensor, override, farm.id)}
+      ${showEditor ? `
+        <div class="minmax-editor">
+          <label>Min</label>
+          <input type="number" step="any" id="twinmin_${farm.id}_${sensor.key}" value="${sensor.min}">
+          <label>Max</label>
+          <input type="number" step="any" id="twinmax_${farm.id}_${sensor.key}" value="${sensor.max}">
+          <button class="primary small" onclick="saveTwinSensorRange('${farm.id}','${sensor.key}')">Save</button>
+          <span id="twinrangestatus_${farm.id}_${sensor.key}" style="color:var(--ink-soft);margin-left:4px;"></span>
+        </div>
+      ` : ''}
     </div>
   `;
+}
+
+function toggleSensorSource(farmId, sensorKey){
+  const farm = state.farms.find(f=>f.id===farmId);
+  if(!farm) return;
+  const sensor = farm.sensors.find(s=>s.key===sensorKey);
+  if(!sensor) return;
+
+  if(sensor.mode === 'actual'){
+    // Real, hardware-backed channel: this switch only controls whether
+    // live device data is accepted for it. It must NEVER move the row
+    // into the Virtual section — mode stays 'actual' permanently here,
+    // because the sensor really is installed in the field either way.
+    toggleRealSensorEnabled(farm, sensor);
+    return;
+  }
+
+  // Pure virtual placeholder row — unrelated existing behaviour, unchanged.
+  sensor.mode = sensor.mode==='actual' ? 'virtual' : 'actual';
+  if(sensor.mode==='virtual'){
+    sensor.value = randIn(sensor.min, sensor.max, sensor.decimals);
+  }
+  renderContent();
+}
+
+// Switches a real channel's enabledReal flag and persists it through the
+// same /sensors/{rawKey}/enabled route the Sensors tab already uses (so a
+// change made here is the same durable state, not a second, conflicting
+// local-only flag). Updates optimistically so the switch responds
+// instantly, then rolls back if the backend call fails.
+async function toggleRealSensorEnabled(farm, sensor){
+  const rawKey = sensor.deviceKey || sensor.key;
+  const channel = sensor.key;
+  const wasEnabled = sensor.enabledReal !== false;
+  const nextEnabled = !wasEnabled;
+
+  sensor.enabledReal = nextEnabled;
+  if(!nextEnabled){
+    sensor.value = randIn(sensor.min, sensor.max, sensor.decimals);
+  }
+  renderContent();
+
+  try{
+    const res = await fetch(`/sensors/${rawKey}/enabled`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({channel, enabled: nextEnabled})
+    });
+    if(!res.ok){
+      sensor.enabledReal = wasEnabled; // roll back the optimistic flip
+      renderContent();
+      alert('Could not change sensor state — see console for details.');
+      console.error(await res.text());
+      return;
+    }
+    const cat = sensorState.sensors.find(x=>x.rawKey===rawKey);
+    if(cat){ cat.enabled = cat.enabled || {}; cat.enabled[channel] = nextEnabled; }
+  }catch(e){
+    sensor.enabledReal = wasEnabled;
+    renderContent();
+    console.error('toggle real sensor enabled:', e);
+    alert('Could not reach the backend to change this sensor.');
+  }
+}
+
+function updateSensorRange(farmId, sensorKey, bound, value){
+  const farm = state.farms.find(f=>f.id===farmId);
+  if(!farm) return;
+  const sensor = farm.sensors.find(s=>s.key===sensorKey);
+  if(!sensor) return;
+  const num = parseFloat(value);
+  if(isNaN(num)) return;
+  sensor[bound] = num;
+  if(sensor.min >= sensor.max){
+    // keep range valid — nudge max up slightly rather than silently rejecting
+    sensor.max = sensor.min + (sensor.decimals>0 ? 0.1 : 1);
+  }
+  sensor.value = randIn(sensor.min, sensor.max, sensor.decimals);
+  renderContent();
 }
 
 function renderContent(){
@@ -1344,7 +1374,7 @@ function renderContent(){
     : 'Create a farm to get started';
 
   if(!farm){
-    content.innerHTML = `<div class="empty-state"><span class="big">No farm yet</span>Click "+ Create Farm" in the left sidebar to set up your first digital twin.</div>`;
+    content.innerHTML = `<div class="empty-state"><span class="big">No farm found</span>No farm thing exists yet. Click "+ Create Farm" in the left sidebar to create your first one.</div>`;
     return;
   }
 
@@ -1357,7 +1387,8 @@ function renderContent(){
 let sensorState = {
   sensors: [],
   farms: [],   // [{farm_id, name}] for the map dropdown
-  loading: false
+  loading: false,
+  expanded: new Set(),   // rawKeys whose mapping/range editor is open
 };
 
 async function loadSensors(){
@@ -1371,21 +1402,186 @@ async function loadSensors(){
     if(fRes.ok) sensorState.farms = (await fRes.json()).farms || [];
   }catch(e){ console.error('loadSensors:', e); }
   sensorState.loading = false;
-  if(state.activeTab==='sensors') renderContent();
+
+  // THE FIX: every time the catalog is refreshed, re-derive each farm's
+  // Twin-tab sensor list from whatever is currently mapped to it. Without
+  // this, farm.sensors stays permanently empty (by design, per the "no
+  // sensor until mapped" fix) and tickActual's forEach loop has nothing
+  // to write live values into — the backend sync was always correct,
+  // the Twin tab just never asked the catalog what it should be showing.
+  rebuildAllFarmSensorsFromCatalog();
+
+  if(state.activeTab==='sensors' && !isEditingFocusedInContent()) renderContent();
+}
+
+// Derive ONE farm's Twin-tab sensor rows from the catalog's mappings.
+// A real sensor contributes one row PER VISIBLE CHANNEL (its full channel
+// list, narrowed by that specific mapping's channel subset if it has one,
+// then with any catalog-level disabled channels removed — disabled means
+// the backend sync loop won't deliver that channel to ANY farm, so it
+// shouldn't appear here either). A virtual sensor contributes one row.
+// Existing values are carried over by key so a rebuild never causes a
+// visible flash/reset of whatever was already on screen.
+function rebuildFarmSensorsFromCatalog(farm){
+  if(!farm) return;
+  const oldByKey = new Map(farm.sensors.map(s=>[s.key, s]));
+  const next = [];
+
+  sensorState.sensors.forEach(cat=>{
+    const mapping = (cat.mappings || []).find(m => m.farmId === farm.id);
+    if(!mapping) return; // not mapped to this farm — show nothing for it
+
+    if(cat.source === 'real'){
+      const allChannels = cat.channels || [];
+      const visible = (mapping.channels && mapping.channels.length) ? mapping.channels : allChannels;
+      const enabledMap = cat.enabled || {};
+      const minMap = cat.min || {};
+      const maxMap = cat.max || {};
+
+      visible.forEach(ch=>{
+        const min = (minMap[ch] !== undefined && minMap[ch] !== null) ? minMap[ch] : 0;
+        const max = (maxMap[ch] !== undefined && maxMap[ch] !== null) ? maxMap[ch] : 100;
+        const existing = oldByKey.get(ch);
+        next.push({
+          key: ch,
+          name: ch,
+          unit: '',
+          mode: 'actual',
+          // enabledReal: true = live hardware data is accepted for this channel.
+          // false = administratively switched off — this row STAYS in the
+          // real/actual section (mode never changes) but its value is now
+          // generated within min/max instead of coming from the device.
+          // Always read fresh from the catalog (the real source of truth) so
+          // a change made anywhere — this Twin tab, the Sensors tab, another
+          // browser tab — is reflected consistently everywhere.
+          enabledReal: enabledMap[ch] !== false,
+          min, max,
+          decimals: (max - min) < 5 ? 2 : 1,
+          value: existing ? existing.value : round((min + max) / 2, 1),
+          deviceKey: cat.rawKey,
+        });
+      });
+    } else {
+      const minMap = cat.min || {};
+      const maxMap = cat.max || {};
+      const min = (minMap[cat.rawKey] !== undefined && minMap[cat.rawKey] !== null) ? minMap[cat.rawKey] : 0;
+      const max = (maxMap[cat.rawKey] !== undefined && maxMap[cat.rawKey] !== null) ? maxMap[cat.rawKey] : 100;
+      const existing = oldByKey.get(cat.rawKey);
+      next.push({
+        key: cat.rawKey,
+        name: cat.name || cat.rawKey,
+        unit: '',
+        mode: 'virtual',
+        min, max,
+        decimals: (max - min) < 5 ? 2 : 1,
+        value: existing ? existing.value : round((min + max) / 2, 1),
+      });
+    }
+  });
+
+  farm.sensors = next;
+}
+
+function rebuildAllFarmSensorsFromCatalog(){
+  state.farms.forEach(rebuildFarmSensorsFromCatalog);
+  if(state.activeTab==='dashboard' && !isEditingFocusedInContent()) renderContent();
+}
+
+function farmName(farmId){
+  const f = sensorState.farms.find(x=>x.farm_id===farmId);
+  return f ? f.name : farmId;
+}
+
+function toggleSensorExpanded(rawKey){
+  if(sensorState.expanded.has(rawKey)) sensorState.expanded.delete(rawKey);
+  else sensorState.expanded.add(rawKey);
+  renderContent();
 }
 
 function renderSensors(){
   const newSensors = sensorState.sensors.filter(s=>s.isNew);
   const knownSensors = sensorState.sensors.filter(s=>!s.isNew);
-  const farmOptions = sensorState.farms.map(f=>`<option value="${f.farm_id}">${f.name}</option>`).join('');
   const totalThings = sensorState.farms.length;
   const totalSensors = sensorState.sensors.length;
 
+  function mappingChip(s, mapping){
+    const label = mapping.channels && mapping.channels.length
+      ? `${farmName(mapping.farmId)} — ${mapping.channels.join(', ')}`
+      : `${farmName(mapping.farmId)} — all channels`;
+    return `
+      <span class="mapping-chip">
+        ${label}
+        <button class="mapping-chip-remove" title="Remove this mapping" onclick="doRemoveMapping('${s.rawKey}','${mapping.farmId}')">✕</button>
+      </span>
+    `;
+  }
+
+  function addMappingRow(s){
+    const farmOptions = sensorState.farms
+      .filter(f => !(s.mappings||[]).some(m=>m.farmId===f.farm_id))
+      .map(f=>`<option value="${f.farm_id}">${f.name}</option>`).join('');
+    if(!farmOptions) return `<div class="helper-text" style="margin-top:6px;">Already mapped to every farm.</div>`;
+
+    const channelBoxes = (s.channels||[]).map(ch=>`
+      <label class="channel-pick"><input type="checkbox" value="${ch}" data-addchan-${s.rawKey}> ${ch}</label>
+    `).join('') || '<span style="color:var(--ink-soft);font-size:12px;">No channels reported yet</span>';
+
+    return `
+      <div class="add-mapping-row" id="addmap_${s.rawKey}">
+        <select id="addmapfarm_${s.rawKey}">
+          <option value="">— choose a farm to add —</option>
+          ${farmOptions}
+        </select>
+        ${s.channels && s.channels.length ? `
+          <div class="channel-pick-group">
+            <span style="font-size:11px;color:var(--ink-soft);">Channels for this farm (leave all unchecked = every channel):</span>
+            <div class="channel-pick-list">${channelBoxes}</div>
+          </div>
+        ` : ''}
+        <button class="primary small" onclick="doAddMapping('${s.rawKey}')">+ Add farm mapping</button>
+      </div>
+    `;
+  }
+
+  function channelRangeEditor(s){
+    if(!s.channels || !s.channels.length){
+      return `<div class="helper-text">No channels reported yet — this sensor hasn't published any readings.</div>`;
+    }
+    const mins = s.min || {};
+    const maxs = s.max || {};
+    const enabled = s.enabled || {};
+    return `
+      <div class="channel-range-table">
+        <div class="channel-range-row head">
+          <div>Channel</div><div>Min</div><div>Max</div><div>On</div><div></div>
+        </div>
+        ${s.channels.map(ch=>{
+          const isOn = enabled[ch] !== false;
+          return `
+          <div class="channel-range-row" id="chanrow_${s.rawKey}_${ch}">
+            <div class="mono">${ch}</div>
+            <div><input type="number" step="any" id="chanmin_${s.rawKey}_${ch}" value="${mins[ch] ?? ''}" placeholder="min"></div>
+            <div><input type="number" step="any" id="chanmax_${s.rawKey}_${ch}" value="${maxs[ch] ?? ''}" placeholder="max"></div>
+            <div>
+              <button class="source-toggle small ${isOn?'on':''}" title="${isOn?'Turn channel off':'Turn channel on'}" onclick="doToggleChannelEnabled('${s.rawKey}','${ch}',${!isOn})">
+                <div class="knob"></div>
+              </button>
+            </div>
+            <div><button class="primary small" onclick="doSaveChannelRange('${s.rawKey}','${ch}')">Save</button></div>
+          </div>
+        `;}).join('')}
+      </div>
+    `;
+  }
+
   function sensorRow(s){
+    const isExpanded = sensorState.expanded.has(s.rawKey);
+    const idLabel = s.source === 'real' ? (s.deviceId || s.rawKey) : s.rawKey;
+    const mappings = s.mappings || [];
     return `
     <tr class="${s.isNew ? 'is-new' : ''}">
       <td>
-        <span class="sensor-id">${s.sensorId}</span>
+        <span class="sensor-id">${idLabel}</span>
         ${s.isNew ? '<span class="new-pill">NEW</span>' : ''}
       </td>
       <td class="mono" style="color:var(--ink-soft);font-size:12px;">${s.rawKey || '—'}</td>
@@ -1396,24 +1592,40 @@ function renderSensors(){
         </div>
       </td>
       <td>
-        <select class="sensor-farm-select" data-rawkey="${s.rawKey}" onchange="doMapSensor('${s.rawKey}', this.value)">
-          <option value="">— unassigned —</option>
-          ${farmOptions}
-        </select>
+        <div class="mapping-chip-list">
+          ${mappings.length ? mappings.map(m=>mappingChip(s,m)).join('') : '<span style="color:var(--ink-soft);font-size:12px;">— unmapped —</span>'}
+        </div>
       </td>
       <td>${s.firstSeen ? s.firstSeen.slice(0,19).replace('T',' ') : '—'}</td>
       <td>
+        <button class="ghost small" onclick="toggleSensorExpanded('${s.rawKey}')">${isExpanded?'Hide':'Configure'}</button>
         ${s.isNew
           ? `<button class="ack-btn" onclick="doAckSensor('${s.rawKey}')">Mark seen</button>`
           : ''}
       </td>
-    </tr>`;
+    </tr>
+    ${isExpanded ? `
+    <tr class="sensor-detail-row">
+      <td colspan="6">
+        <div class="sensor-detail-panel">
+          <div class="sensor-detail-block">
+            <div class="sensor-detail-label">Farm mappings — map this sensor (or just some of its channels) to one or more farms</div>
+            ${addMappingRow(s)}
+          </div>
+          <div class="sensor-detail-block">
+            <div class="sensor-detail-label">Per-channel range &amp; on/off — saved to the sensor catalog, applies for every farm and survives refresh</div>
+            ${channelRangeEditor(s)}
+          </div>
+        </div>
+      </td>
+    </tr>
+    ` : ''}`;
   }
 
   const tableHead = `
     <table class="sensor-table">
       <thead><tr>
-        <th>ID</th><th>Raw Key</th><th>Name</th><th>Mapped Farm</th><th>First Seen</th><th></th>
+        <th>ID</th><th>Raw Key</th><th>Name</th><th>Mapped Farms</th><th>First Seen</th><th></th>
       </tr></thead>
       <tbody>`;
   const tableClose = `</tbody></table>`;
@@ -1446,15 +1658,6 @@ function renderSensors(){
   }
 
   html += `</div>`;
-
-  // Re-set farm select values after innerHTML render
-  setTimeout(()=>{
-    sensorState.sensors.forEach(s=>{
-      const sel = document.querySelector(`[data-rawkey="${s.rawKey}"]`);
-      if(sel && s.farmId) sel.value = s.farmId;
-    });
-  }, 0);
-
   return html;
 }
 
@@ -1478,16 +1681,171 @@ async function doRenameSensor(rawKey){
   }catch(e){ console.error('rename sensor:', e); }
 }
 
-async function doMapSensor(rawKey, farmId){
+async function doAddMapping(rawKey){
+  const farmSel = document.getElementById(`addmapfarm_${rawKey}`);
+  if(!farmSel || !farmSel.value){ alert('Choose a farm first.'); return; }
+  const farmId = farmSel.value;
+
+  const checked = Array.from(document.querySelectorAll(`[data-addchan-${rawKey}]:checked`)).map(el=>el.value);
+  const channels = checked.length ? checked : null;   // none checked = every channel
+
   try{
-    await fetch(`/sensors/${rawKey}/map`, {
+    const res = await fetch(`/sensors/${rawKey}/mappings`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({farm_id: farmId, channels})
+    });
+    if(!res.ok){ alert('Could not add mapping — see console for details.'); console.error(await res.text()); return; }
+    const data = await res.json();
+    const s = sensorState.sensors.find(x=>x.rawKey===rawKey);
+    if(s) s.mappings = data.mappings;
+    rebuildAllFarmSensorsFromCatalog();
+    const mappedFarm = state.farms.find(f=>f.id===farmId);
+    if(mappedFarm) tickActual(mappedFarm);
+    renderContent();
+  }catch(e){ console.error('add mapping:', e); alert('Could not reach the backend to add this mapping.'); }
+}
+
+async function doRemoveMapping(rawKey, farmId){
+  if(!confirm(`Remove the mapping to "${farmName(farmId)}" for this sensor?`)) return;
+  try{
+    const res = await fetch(`/sensors/${rawKey}/mappings/${farmId}`, {method: 'DELETE'});
+    if(!res.ok){ alert('Could not remove mapping — see console for details.'); console.error(await res.text()); return; }
+    const data = await res.json();
+    const s = sensorState.sensors.find(x=>x.rawKey===rawKey);
+    if(s) s.mappings = data.mappings;
+    rebuildAllFarmSensorsFromCatalog();
+    renderContent();
+  }catch(e){ console.error('remove mapping:', e); alert('Could not reach the backend to remove this mapping.'); }
+}
+
+async function doSaveChannelRange(rawKey, channel){
+  const minEl = document.getElementById(`chanmin_${rawKey}_${channel}`);
+  const maxEl = document.getElementById(`chanmax_${rawKey}_${channel}`);
+  const min = minEl && minEl.value !== '' ? parseFloat(minEl.value) : null;
+  const max = maxEl && maxEl.value !== '' ? parseFloat(maxEl.value) : null;
+  if((minEl.value !== '' && isNaN(min)) || (maxEl.value !== '' && isNaN(max))){
+    alert('Min/max must be numbers.'); return;
+  }
+  if(min !== null && max !== null && min >= max){
+    alert('Min must be less than max.'); return;
+  }
+  try{
+    const res = await fetch(`/sensors/${rawKey}/range`, {
       method: 'PATCH',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({farm_id: farmId || null})
+      body: JSON.stringify({channel, min, max})
     });
+    if(!res.ok){ alert('Could not save range — see console for details.'); console.error(await res.text()); return; }
     const s = sensorState.sensors.find(x=>x.rawKey===rawKey);
-    if(s) s.farmId = farmId || null;
-  }catch(e){ console.error('map sensor:', e); }
+    if(s){
+      s.min = s.min || {}; s.max = s.max || {};
+      if(min !== null) s.min[channel] = min;
+      if(max !== null) s.max[channel] = max;
+    }
+    rebuildAllFarmSensorsFromCatalog();
+    const row = document.getElementById(`chanrow_${rawKey}_${channel}`);
+    if(row){
+      row.style.outline = '2px solid var(--ok)';
+      setTimeout(()=>{ if(row) row.style.outline = ''; }, 1200);
+    }
+  }catch(e){ console.error('save channel range:', e); alert('Could not reach the backend to save this range.'); }
+}
+
+// Shared by the Twin tab's virtual-sensor editor and the Settings tab's
+// per-farm sensor table. Both used to be local-only (onchange, no backend
+// call at all) which is exactly why min/max kept "reverting" — there was
+// nothing to revert FROM, the typed value never left the browser, so the
+// very next catalog poll (or any full re-render) simply redrew the old
+// catalog/default value over whatever was typed. This persists through
+// the same /sensors/{rawKey}/range endpoint the working Sensors-tab
+// editor already uses, so a save here is durable and visible everywhere.
+async function saveSensorRangeFor(farmId, sensorKey, minElId, maxElId, statusElId){
+  const farm = state.farms.find(f=>f.id===farmId); if(!farm) return;
+  const sensor = farm.sensors.find(s=>s.key===sensorKey); if(!sensor) return;
+
+  const minEl = document.getElementById(minElId);
+  const maxEl = document.getElementById(maxElId);
+  if(!minEl || !maxEl) return;
+  const min = minEl.value !== '' ? parseFloat(minEl.value) : null;
+  const max = maxEl.value !== '' ? parseFloat(maxEl.value) : null;
+
+  if((minEl.value !== '' && isNaN(min)) || (maxEl.value !== '' && isNaN(max))){
+    alert('Min/max must be numbers.'); return;
+  }
+  if(min !== null && max !== null && min >= max){
+    alert('Min must be less than max.'); return;
+  }
+
+  // A real sensor's row is keyed by its CHANNEL name (e.g. "moisture"), but
+  // the backend route needs the underlying DEVICE key — rebuildFarmSensorsFromCatalog
+  // attaches that as deviceKey on every real-sensor row for exactly this purpose.
+  // A virtual sensor's row key already IS its catalog rawKey, so it doubles as both.
+  const rawKey = sensor.deviceKey || sensor.key;
+  const channel = sensor.key;
+
+  const statusEl = statusElId ? document.getElementById(statusElId) : null;
+  if(statusEl) statusEl.textContent = 'Saving…';
+
+  try{
+    const res = await fetch(`/sensors/${rawKey}/range`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({channel, min, max})
+    });
+    if(!res.ok){
+      if(statusEl) statusEl.textContent = '';
+      alert('Could not save range — see console for details.'); console.error(await res.text()); return;
+    }
+    const cat = sensorState.sensors.find(x=>x.rawKey===rawKey);
+    if(cat){
+      cat.min = cat.min || {}; cat.max = cat.max || {};
+      if(min !== null) cat.min[channel] = min;
+      if(max !== null) cat.max[channel] = max;
+    }
+    if(min !== null) sensor.min = min;
+    if(max !== null) sensor.max = max;
+    rebuildAllFarmSensorsFromCatalog();
+    if(statusEl){
+      statusEl.textContent = 'Saved ✓';
+      setTimeout(()=>{ if(statusEl) statusEl.textContent = ''; }, 2000);
+    }
+  }catch(e){
+    console.error('save sensor range:', e);
+    if(statusEl) statusEl.textContent = '';
+    alert('Could not reach the backend to save this range.');
+  }
+}
+
+function saveTwinSensorRange(farmId, sensorKey){
+  saveSensorRangeFor(
+    farmId, sensorKey,
+    `twinmin_${farmId}_${sensorKey}`, `twinmax_${farmId}_${sensorKey}`,
+    `twinrangestatus_${farmId}_${sensorKey}`
+  );
+}
+
+function saveSettingsSensorRange(farmId, sensorKey){
+  saveSensorRangeFor(
+    farmId, sensorKey,
+    `setmin_${farmId}_${sensorKey}`, `setmax_${farmId}_${sensorKey}`,
+    `setrangestatus_${farmId}_${sensorKey}`
+  );
+}
+
+async function doToggleChannelEnabled(rawKey, channel, enabled){
+  try{
+    const res = await fetch(`/sensors/${rawKey}/enabled`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({channel, enabled})
+    });
+    if(!res.ok){ alert('Could not change channel state — see console for details.'); console.error(await res.text()); return; }
+    const s = sensorState.sensors.find(x=>x.rawKey===rawKey);
+    if(s){ s.enabled = s.enabled || {}; s.enabled[channel] = enabled; }
+    rebuildAllFarmSensorsFromCatalog();
+    renderContent();
+  }catch(e){ console.error('toggle channel enabled:', e); alert('Could not reach the backend to change this channel.'); }
 }
 
 async function doAckSensor(rawKey){
@@ -1619,6 +1977,7 @@ function renderSettings(farm){
         <input type="text" value="${farm.name}" onchange="renameFarm('${farm.id}', this.value)">
       </div>
       <button id="saveFlash" class="ghost" style="opacity:0;color:var(--ok);transition:opacity .3s;pointer-events:none;">✓ Saved</button>
+      <button class="danger" onclick="removeFarm('${farm.id}')" title="Permanently delete this farm from Ditto">🗑 Delete Farm</button>
     </div>
 
     <div class="settings-grid">
@@ -1656,9 +2015,13 @@ function renderSettings(farm){
               <div class="sensor-table-name"><span class="lib-chip-icon sm">${sensorIcon(s)}</span>${s.name}</div>
               <div><span class="mode-badge ${s.mode}" style="cursor:pointer" onclick="toggleSensorMode('${s.key}')">${s.mode}</span></div>
               <div>${s.unit}</div>
-              <div><input type="number" step="any" value="${s.min}" onchange="updateSensorRange('${s.key}','min',this.value)"></div>
-              <div><input type="number" step="any" value="${s.max}" onchange="updateSensorRange('${s.key}','max',this.value)"></div>
-              <div><button class="icon-btn danger-btn" onclick="removeSensor('${s.key}')">Remove</button></div>
+              <div><input type="number" step="any" id="setmin_${farm.id}_${s.key}" value="${s.min}"></div>
+              <div><input type="number" step="any" id="setmax_${farm.id}_${s.key}" value="${s.max}"></div>
+              <div>
+                <button class="primary small" onclick="saveSettingsSensorRange('${farm.id}','${s.key}')">Save</button>
+                <span id="setrangestatus_${farm.id}_${s.key}" style="color:var(--ink-soft);font-size:11px;"></span>
+                <button class="icon-btn danger-btn" onclick="removeSensor('${s.key}')">Remove</button>
+              </div>
             </div>
           `).join('') || '<div class="empty-state">No sensors yet — add one on the left.</div>'}
         </div>
@@ -1754,18 +2117,13 @@ function renderScenarioConfigSection(farm){
 /* ---------------- init ---------------- */
 
 (async function init(){
-  let loadedAny = false;
-
   try{
     const res = await fetch('/farms');
     if(res.ok){
       const data = await res.json();
       (data.farms || []).forEach(f=>{
-        // The legacy twin (smartfarm:twin01) now comes back through this
-        // same /farms list like any other farm — no special-casing needed.
-        const isLegacy = f.thing_id === 'smartfarm:twin01';
-        const farm = createFarm(f.name || f.farm_id, isLegacy, {
-          id: isLegacy ? 'legacy' : f.farm_id,
+        const farm = createFarm(f.name || f.farm_id, false, {
+          id: f.farm_id,
           meta: {
             field: f.field, crop: f.crop,
             plantingDate: new Date().toISOString().slice(0,10),
@@ -1773,26 +2131,36 @@ function renderScenarioConfigSection(farm){
           }
         });
         state.farms.push(farm);
-        startFarmTimers(farm);
-        loadedAny = true;
+        loadScenarios(farm).then(()=>renderAll());
       });
     }
-  }catch(e){ /* backend unreachable */ }
+  }catch(e){ /* backend unreachable — sidebar will show no farms */ }
 
-  if(!loadedAny){
-    // Backend unreachable / no farms exist yet in Ditto at all — show a
-    // local-only placeholder so the page isn't blank during development.
-    // This is NEVER pushed to Ditto and disappears the moment /farms
-    // returns real data, so it can't reappear as a ghost on refresh.
-    const placeholder = createFarm('No farms found — check backend connection', true);
-    placeholder.isPlaceholder = true;
-    state.farms.push(placeholder);
+  // Restore whichever farm the user had open before the last refresh.
+  // Falls back to the first farm if nothing was saved, or if the saved
+  // farm no longer exists (e.g. it was deleted in another tab/session).
+  let savedFarmId = null;
+  try{ savedFarmId = localStorage.getItem('smartfarm_active_farm'); }catch(e){ /* storage unavailable */ }
+
+  if(savedFarmId && state.farms.some(f=>f.id===savedFarmId)){
+    state.activeFarmId = savedFarmId;
+  } else if(state.farms.length > 0){
+    state.activeFarmId = state.farms[0].id;
+    try{ localStorage.setItem('smartfarm_active_farm', state.activeFarmId); }catch(e){ /* ignore */ }
   }
 
-  state.activeFarmId = state.farms[0] ? state.farms[0].id : null;
+  // Load the sensor catalog and derive every farm's Twin-tab sensor list
+  // from its mappings BEFORE starting the per-farm poll timers. This is
+  // what makes live data appear without needing to visit the Sensors tab
+  // first — previously timers started against an always-empty
+  // farm.sensors, and nothing ever populated it afterwards.
+  await loadSensors();
+  state.farms.forEach(startFarmTimers);
 
-  // Load sensor registry on startup
-  loadSensors();
+  // Re-poll the catalog periodically so mappings/ranges/enabled-state
+  // changed from anywhere (another tab, curl, a future automation) show
+  // up here too, not just changes made through this exact browser tab.
+  setInterval(loadSensors, 5000);
 
   document.querySelector('[data-tab="dashboard"].tab-btn')?.classList.add('active');
   document.querySelector('[data-tab="dashboard"].side-nav-btn')?.classList.add('active');
